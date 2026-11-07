@@ -1,10 +1,12 @@
 import { restaurantScenario1 } from './restaurant/scenario-1'
+import { restaurantScenario2 } from './restaurant/scenario-2'
 import { magazzinoScenario1 } from './magazzino/scenario-1'
 import { fabbricaScenario1 } from './fabbrica/scenario-1'
 import type { Scenario } from '../../types'
 
 export const scenarios: Record<string, Scenario> = {
   'restaurant-1': restaurantScenario1,
+  'restaurant-2': restaurantScenario2,
   'magazzino-1': magazzinoScenario1,
   'fabbrica-1': fabbricaScenario1,
 }
