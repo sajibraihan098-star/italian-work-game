@@ -1,0 +1,64 @@
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
+import type { UserProgress, ScenarioId } from '../types'
+import { STORAGE_KEY, XP_PER_SCENARIO, LEVELS } from '../config/constants'
+
+interface ProgressState extends UserProgress {
+  addXp: (amount: number) => void
+  completeScenario: (id: ScenarioId) => void
+  masterVocabulary: (ids: string[]) => void
+  resetProgress: () => void
+}
+
+const initialState: UserProgress = {
+  completedScenarios: [],
+  xp: 0,
+  level: 1,
+  currentStreak: 0,
+  vocabularyMastered: [],
+}
+
+function calculateLevel(xp: number): number {
+  let level = 1
+  for (const l of LEVELS) {
+    if (xp >= l.xpRequired) level = l.level
+  }
+  return level
+}
+
+export const useProgressStore = create<ProgressState>()(
+  persist(
+    (set, get) => ({
+      ...initialState,
+
+      addXp: (amount) => {
+        const newXp = get().xp + amount
+        set({
+          xp: newXp,
+          level: calculateLevel(newXp),
+        })
+      },
+
+      completeScenario: (id) => {
+        const { completedScenarios, addXp } = get()
+        if (!completedScenarios.includes(id)) {
+          set({ completedScenarios: [...completedScenarios, id] })
+          addXp(XP_PER_SCENARIO)
+        }
+      },
+
+      masterVocabulary: (ids) => {
+        const current = get().vocabularyMastered
+        const newIds = ids.filter((id) => !current.includes(id))
+        if (newIds.length) {
+          set({ vocabularyMastered: [...current, ...newIds] })
+        }
+      },
+
+      resetProgress: () => set(initialState),
+    }),
+    {
+      name: STORAGE_KEY,
+    }
+  )
+)
