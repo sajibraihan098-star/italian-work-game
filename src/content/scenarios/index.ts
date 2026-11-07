@@ -1,18 +1,12 @@
-/**
- * Content Registry
- * All scenarios are registered here.
- * When adding a new scenario, just import and add it to the map.
- * This is the ONLY place that needs to know about all scenarios.
- */
-
 import { restaurantScenario1 } from './restaurant/scenario-1'
+import { magazzinoScenario1 } from './magazzino/scenario-1'
+import { fabbricaScenario1 } from './fabbrica/scenario-1'
 import type { Scenario } from '../../types'
 
 export const scenarios: Record<string, Scenario> = {
   'restaurant-1': restaurantScenario1,
-  // Future:
-  // 'magazzino-1': magazzinoScenario1,
-  // 'fabbrica-1': fabbricaScenario1,
+  'magazzino-1': magazzinoScenario1,
+  'fabbrica-1': fabbricaScenario1,
 }
 
 export function getScenario(id: string): Scenario | undefined {
@@ -22,3 +16,10 @@ export function getScenario(id: string): Scenario | undefined {
 export function getAllScenarios(): Scenario[] {
   return Object.values(scenarios)
 }
+
+export const worldMeta = {
+  restaurant: { emoji: '🍝', color: '#e5483a', label: 'Ristorante' },
+  magazzino: { emoji: '📦', color: '#2f8fd8', label: 'Magazzino' },
+  fabbrica: { emoji: '🏭', color: '#1f9d55', label: 'Fabbrica' },
+  everyday: { emoji: '🏙️', color: '#8b5cf6', label: 'Vita reale' },
+} as const

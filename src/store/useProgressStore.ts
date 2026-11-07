@@ -7,6 +7,7 @@ interface ProgressState extends UserProgress {
   addXp: (amount: number) => void
   completeScenario: (id: ScenarioId) => void
   masterVocabulary: (ids: string[]) => void
+  recordPlayToday: () => void
   resetProgress: () => void
 }
 
@@ -15,7 +16,18 @@ const initialState: UserProgress = {
   xp: 0,
   level: 1,
   currentStreak: 0,
+  lastPlayedDate: undefined,
   vocabularyMastered: [],
+}
+
+function todayISO() {
+  return new Date().toISOString().slice(0, 10)
+}
+
+function yesterdayISO() {
+  const d = new Date()
+  d.setDate(d.getDate() - 1)
+  return d.toISOString().slice(0, 10)
 }
 
 function calculateLevel(xp: number): number {
@@ -40,11 +52,12 @@ export const useProgressStore = create<ProgressState>()(
       },
 
       completeScenario: (id) => {
-        const { completedScenarios, addXp } = get()
+        const { completedScenarios, addXp, recordPlayToday } = get()
         if (!completedScenarios.includes(id)) {
           set({ completedScenarios: [...completedScenarios, id] })
           addXp(XP_PER_SCENARIO)
         }
+        recordPlayToday()
       },
 
       masterVocabulary: (ids) => {
@@ -53,6 +66,14 @@ export const useProgressStore = create<ProgressState>()(
         if (newIds.length) {
           set({ vocabularyMastered: [...current, ...newIds] })
         }
+      },
+
+      recordPlayToday: () => {
+        const { lastPlayedDate, currentStreak } = get()
+        const today = todayISO()
+        if (lastPlayedDate === today) return
+        const newStreak = lastPlayedDate === yesterdayISO() ? currentStreak + 1 : 1
+        set({ lastPlayedDate: today, currentStreak: newStreak })
       },
 
       resetProgress: () => set(initialState),
