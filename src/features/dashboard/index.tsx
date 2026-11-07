@@ -1,4 +1,3 @@
-import { Card } from '../../components/ui/Card'
 import { Button } from '../../components/ui/Button'
 import { useProgressStore } from '../../store/useProgressStore'
 import { LEVELS } from '../../config/constants'
